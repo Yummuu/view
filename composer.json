@@ -2,6 +2,7 @@
     "name": "yummuu/view-engine",
     "description": "parse view",
     "type": "library",
+    "license": "MIT",
     "require": {
         "php": ">=7.2"
     },
