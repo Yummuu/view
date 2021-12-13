@@ -1,2 +1,2 @@
 # view
-library
+this is a test library

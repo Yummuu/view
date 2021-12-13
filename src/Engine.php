@@ -9,6 +9,7 @@ class Engine
     public function render(string $template, array $data = [], array $config = [])
     {
         # code...
+        return $template;
     }
 
     public static function hello()
