@@ -29,20 +29,21 @@ class FormStringHandle implements StringHandleInterface
                     continue;
                 }
                 $id      = $this->createFieldId($fieldItem);
+                $name    = $this->createFieldName($fieldItem);
                 $label   = $this->createLabel($fieldItem, $id);
                 $str     = '';
                 switch ($fieldItem['type']) {
                     case 'select':
-                        $str = $this->formFieldForSelect($fieldItem, $id);
+                        $str = $this->formFieldForSelect($fieldItem, $name);
                         break;
                     case 'radio':
-                        $str = $this->formFieldForRadio($fieldItem, $id);
+                        $str = $this->formFieldForRadio($fieldItem, $name);
                         break;
                     case 'checkbox':
-                        $str = $this->formFieldForCheckbox($fieldItem, $id);
+                        $str = $this->formFieldForCheckbox($fieldItem, $name);
                         break;
                     case 'number':
-                        $str = $this->formFieldForNum($fieldItem, $id);
+                        $str = $this->formFieldForNum($fieldItem, $name);
                         break;
                     case 'textarea':
                         $str = $this->formFieldForTextarea($fieldItem, $id);
@@ -75,10 +76,24 @@ EOF;
         return "form-" . (isset($data['id']) ? $data['id'] : md5($data));
     }
 
+    protected function createFieldName($data)
+    {
+        return isset($data['name']) ? $data['name'] : ((isset($data['id']) ? $data['id'] : md5($data)));
+    }
+
     protected function createLabel($fieldItem, $id)
     {
         $label = isset($fieldItem['label']) ? $fieldItem['label'] : '';
-        return "<label for='$id'>$label</label>";
+        $tips  = isset($fieldItem['tips']) ? $fieldItem['tips'] : '';
+        $must  = isset($fieldItem['must']) ? $fieldItem['must'] : '';
+        $other = '';
+        if ($must) {
+            $other .= "<i class='form-must'>$must</i>";
+        }
+        if ($tips) {
+            $other .= "<i class='form-tips'>$tips</i>";
+        }
+        return "<label for='$id'>$label $other</label>";
     }
 
     protected function createFormItem($label, $content): string
@@ -100,12 +115,12 @@ FORM;
 INPUT;
     }
 
-    protected function formFieldForNum($data, $id, $num = 0): string
+    protected function formFieldForNum($data, $name, $num = 0): string
     {
         $tips  = isset($data['placeholder']) ? $data['placeholder'] : '';                           //提示语
         $value = $num ? $num : (isset($data['defaultValue']) ? $data['defaultValue'] : 0);          //默认值
         return <<<INPUT
-            <input type='number' class='form-control' id='$id' placeholder='$tips' value='$value' />
+            <input type='number' class='form-control' name='$name' placeholder='$tips' value='$value' />
 INPUT;
     }
 
@@ -127,7 +142,7 @@ INPUT;
 TEXTAREA;
     }
 
-    protected function formFieldForCheckbox($data, $id, $checked = []): string
+    protected function formFieldForCheckbox($data, $name, $checked = []): string
     {
         $lists = isset($data['properties']) ? $data['properties'] : [];
         $result = '';
@@ -135,12 +150,12 @@ TEXTAREA;
             $v = $item['value'];
             $n = $item['id'];
             $c = in_array($v, $checked) ? 'true' : 'false';
-            $result .= "<input type='checkbox' value='$v' id='$v' name='$id' checked='$c' /><label for='$v'>$n</label>";
+            $result .= "<input type='checkbox' value='$v' id='$v' name='$name' checked='$c' /><label for='$v'>$n</label>";
         }
         return $result;
     }
 
-    protected function formFieldForRadio($data, $id, $checked = ''): string
+    protected function formFieldForRadio($data, $name, $checked = ''): string
     {
         $lists = isset($data['properties']) ? $data['properties'] : [];
         $result = '';
@@ -148,12 +163,12 @@ TEXTAREA;
             $v = $item['value'];
             $n = $item['id'];
             $c = $v == $checked ? 'true' : 'false';
-            $result .= "<input type='radio' value='$v' id='$v' name='$id' checked='$c' /><label for='$v'>$n</label>";
+            $result .= "<input type='radio' value='$v' id='$v' name='$name' checked='$c' /><label for='$v'>$n</label>";
         }
         return $result;
     }
 
-    protected function formFieldForSelect($data, $id, $selected = []): string
+    protected function formFieldForSelect($data, $name, $selected = []): string
     {
         $lists = isset($data['properties']) ? $data['properties'] : [];
         $result = '';
@@ -164,7 +179,7 @@ TEXTAREA;
             $result .= "<option value='$v' selected='$c'>$n</option>";
         }
         return <<<SELECT
-        <select id="$id" name="$id">
+        <select name="$name">
             $result
         </select>
 SELECT;

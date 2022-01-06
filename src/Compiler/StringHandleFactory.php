@@ -22,6 +22,7 @@ class StringHandleFactory
                     'css'  => Concern\CssStringHandle::class,
                     'js'   => Concern\JsStringHandle::class,
                     'form' => Concern\FormStringHandle::class,
+                    'list' => Concern\ListStringHandle::class,
                 ];
                 if(isset($map[$item[$field]])) {
                     $class = new $map[$item[$field]];

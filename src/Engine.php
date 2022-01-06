@@ -19,8 +19,13 @@ class Engine
         return $tplClass->render($template, $data);
     }
 
-    //data设计:{"name":{"type":"css","value":"","list":[]},"name1":{"type":"js","value":"","list":[]},"name2":{"type":"form","form":"","content":""},"name3":{"type":"list","content":""}}
-    public function getContens(string $template, array $data = [])
+    /**
+     *
+     * @param string $template  模板文件
+     * @param array $data       数据
+     * @return string
+     */
+    public function getContents(string $template, array $data = [])
     {
         $this->compiler = new BladeCompiler();
         return $this->compiler->compile($template)->toString($data);
